@@ -5,3 +5,11 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+
+## Strapi.io is required for this to work
+
+Download [Strapi](https://strapi.io/)
+Install [Import/Export](https://market.strapi.io/plugins/strapi-plugin-import-export-entries)
+
+## JSON File Strapi data
+It's located in the root directory called strapi_db.json
