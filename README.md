@@ -9,7 +9,23 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 ## Strapi.io is required for this to work
 
 Download [Strapi](https://strapi.io/)
-Install [Import/Export](https://market.strapi.io/plugins/strapi-plugin-import-export-entries)
+use: npx create-strapi-app@latest my-project
 
-## JSON File Strapi data
-It's located in the root directory called strapi_db.json
+run through the Strapi setup. Once complete, turn off your server and then replace the src file in the strapi install folder with the src folder
+that was downloaded with this pull.
+
+Place the backup file into the strapi root folder and run this command:
+npm run strapi import -- -f backup.tar.gz
+
+You will see 2 errors, that's fine, as it's a feature we do not use in Strapi.
+
+Once imported, start strapi
+npm run strapi dev
+
+and you should see all the new data in your strapi install.
+
+In your vue app:
+testTwo@testing.com
+1337
+
+You should see an order appear. To see the other oders, look them up in the strapi backend.
