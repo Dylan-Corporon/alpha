@@ -7,6 +7,8 @@
 
     <Button label="Submit" @click="handleSubmit" :disabled="!isFormValid" />
 
+
+    <!-- Need to make this use the OrderResults.vue file -->
     <div v-if="submitted">
 
       <div v-if="matchingItem">
@@ -20,7 +22,10 @@
         <p>Fulfillment Date: {{ matchingItem.fulfillmentDate }}</p>
         <p>Tracking Number: {{ matchingItem.trackingNumber }}</p>
         <p>Courier: {{ matchingItem.courier }}</p>
-        <Button label="Return" disabled />
+
+        <button :disabled="returnButtonDisabled" class="p-button p-component" type="button" aria-label="Return" data-pc-name="button" data-pc-section="root">
+        <span class="p-button-label" data-pc-section="label">Return</span></button>
+
       </div>
 
       <div v-if="submitted">
@@ -62,6 +67,7 @@ export default {
       matchingMessage: false, // Variable to display Bingo message
       matchingItem: null, //  Store the matching WooCommerce order
       matchError: null, // Stores the error if no matching order
+      returnButtonDisabled: true, // Initially disabled
    };
   },
   computed: {
@@ -99,9 +105,8 @@ export default {
         this.matchingOrder = null;
         this.orderDetails = null;
         this.orderNotFound = true;
-        console.log("Order not found - setting flag 'orderNotFound'");  // ... AND that it sets orderNotFound = true  within it!
-       this.matchingOrder = null;
-       this.orderDetails = null;
+        this.matchingOrder = null;
+        this.orderDetails = null;
 
       }
     },
@@ -112,12 +117,13 @@ export default {
       axios.get(orderDetailEndpoint)
         .then(response => {
 
-          const orderData = response.data.data.attributes.orderData;
+          const orderData = response.data. data.attributes.orderData;
           const matchingItem = orderData.find(item => item.wooId === this.orderNumber);
 
           if (matchingItem) {
             this.matchingMessage = true;
             this.matchingItem = matchingItem; // Store the matching item
+            this.returnButtonDisabled = false; // Enable the button
           }  else {
             // Case: matchingItem not found (Add display logic)
             this.matchError = "No matching WooCommerce order found.";
