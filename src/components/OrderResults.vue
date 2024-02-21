@@ -1,9 +1,10 @@
 <template>
-  <ul>
-    <li v-for="recipe in recipes" :key="recipe.id">
-      {{ recipe.name }} - Cooking Time: {{ recipe.cookTimeMinutes }} minutes
-    </li>
-  </ul>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4"> <div v-for="recipe in recipes" :key="recipe.id" class="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+      <h2>{{ recipe.name }}</h2>
+      <p>Cooking Time: {{ recipe.cookTimeMinutes }} minutes</p>
+      </div>
+  </div>
+
 </template>
 
 <script>

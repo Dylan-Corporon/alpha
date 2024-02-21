@@ -9,11 +9,11 @@
 
     <template v-else>
       <div class="container mx-auto p-4 max-w-500 max-w-xl">
-        <h1 class="text-4xl text-center mb-4 font-bold">{{ pageContent }}</h1>
+        <h1 class="text-4xl text-center mb-4 font-bold">{{ pageTitle }}</h1>
         <div class="flex flex-col gap-2 mb-4 text-left">
-            <p class="">Email Address:</p>
+            <p class="">{{ emailTitle }}</p>
           <InputText placeholder="Email Address" class="w-full p-2 border border-gray-300 rounded-md shadow-sm"/>
-          <p>Order Number:</p>
+          <p>{{ orderTitle }}</p>
           <p><small>search for food items, like chicken</small></p>
           <InputText type="text" placeholder="Order Number" class="w-full p-2 border border-gray-300 rounded-md shadow-sm" v-model="orderNumber" />
           <Button label="Submit" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm" @click="handleSubmit" />
@@ -22,7 +22,6 @@
     </template>
 
     <div v-if="buttonPressed">
-      <p>Button was pressed!</p>
       <OrderResults :recipes="fetchedData.recipes" v-if="showResults" />
     </div>
   </div>
@@ -51,6 +50,7 @@ export default {
       buttonPressed: false,
       fetchedData: {},
       showResults: false,
+      emailAddress: '',
       orderNumber: '',
     };
   },
@@ -58,13 +58,15 @@ export default {
    this.fetchData();
   },
   methods: {
+
     async fetchData() {
       try {
         const response = await axios.get('http://localhost:1337/api/returnpage');
-        this.pageContent = response.data.data.attributes.Title; // Adjust 'someTextProperty'
+        this.pageTitle    = response.data.data.attributes.Title;
+        this.emailTitle   = response.data.data.attributes.Login;
+        this.orderTitle   = response.data.data.attributes.OrderNumber;
       } catch (error) {
         console.error("Error fetching data:", error);
-        // Handle error gracefully, maybe display an error message
       } finally {
         this.isLoading = false;
       }
@@ -77,7 +79,6 @@ export default {
 
         const response = await fetch(`https://dummyjson.com/recipes/search?q=${this.orderNumber}`);
         // Notice the template literal for URL construction
-
         this.fetchedData = await response.json();
         this.buttonPressed = true;
         this.showResults = true;
