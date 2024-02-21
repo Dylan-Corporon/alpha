@@ -14,7 +14,8 @@
             <p class="">Email Address:</p>
           <InputText placeholder="Email Address" class="w-full p-2 border border-gray-300 rounded-md shadow-sm"/>
           <p>Order Number:</p>
-          <InputText type="number" placeholder="Order Number" class="w-full p-2 border border-gray-300 rounded-md shadow-sm" v-model="orderNumber" />
+          <p><small>search for food items, like chicken</small></p>
+          <InputText type="text" placeholder="Order Number" class="w-full p-2 border border-gray-300 rounded-md shadow-sm" v-model="orderNumber" />
           <Button label="Submit" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm" @click="handleSubmit" />
         </div>
       </div>
@@ -22,21 +23,17 @@
 
     <div v-if="buttonPressed">
       <p>Button was pressed!</p>
-      <ul v-if="showResults">
-        <li v-for="recipe in fetchedData.recipes" :key="recipe.id">
-          {{ recipe.name }} - Cooking Time: {{ recipe.cookTimeMinutes }} minutes
-        </li>
-      </ul>
-
+      <OrderResults :recipes="fetchedData.recipes" v-if="showResults" />
     </div>
   </div>
+
 </template>
 
 <script>
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
-import OrderDetails from './components/OrderResults.vue';
+import OrderResults from './components/OrderResults.vue';
 
 import axios from 'axios';
 
@@ -45,7 +42,7 @@ export default {
   components: {
     InputText,
     Button,
-    OrderDetails,
+    OrderResults
   },
   data() {
     return {
@@ -74,14 +71,19 @@ export default {
     },
     async handleSubmit() {
       try {
-        const response = await fetch('https://dummyjson.com/recipes');
+        if (!this.orderNumber) { // Check if orderNumber is empty
+          return; // Do nothing if empty
+        }
+
+        const response = await fetch(`https://dummyjson.com/recipes/search?q=${this.orderNumber}`);
+        // Notice the template literal for URL construction
+
         this.fetchedData = await response.json();
         this.buttonPressed = true;
         this.showResults = true;
       } catch (error) {
-        console.error("Error fetching from dummy API:", error);
-      } finally {
-        console.log("Order Number:", this.orderNumber); // will need to remove later
+        console.error("Error fetching recipes:", error);
+        // Handle the error (e.g., display an error message to the user)
       }
     }
   }
