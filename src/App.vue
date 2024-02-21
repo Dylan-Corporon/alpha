@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-center items-center h-screen">
+  <div class="flex flex-col justify-center items-center">
 
     <template v-if="isLoading">
       <div class="animate-pulse">
