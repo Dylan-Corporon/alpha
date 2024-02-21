@@ -1,9 +1,9 @@
 <template>
 
   <div class="order-details-wrapper">
-    <div class="flex flex-col sm:flex-row flex-wrap justify-between gap-4 bg-gray-200 p-6">
+    <div class="flex bg-gray-200 p-6">
 
-      <div class="container">
+      <div class="container flex flex-wrap justify-center gap-4">
 
         <div class="col-span-2">
           <p class="orderNumber font-bold-600">Order #342342</p>
@@ -17,9 +17,9 @@
     </div>
   </div>
 
-  <div class="container mx-auto flex flex-col sm:flex-row flex-wrap justify-center gap-4 p-4">
+  <div class="container mx-auto p-4">
 
-    <div class="flex flex-wrap justify-between gap-4">
+    <div class="flex flex-wrap justify-around gap-4">
       <div v-for="recipe in recipes" :key="recipe.id" class="bg-white rounded-lg shadow-md p-4 border border-gray-200">
         <img :src="recipe.image" alt="Placeholder Image" class="w-full h-40 object-cover mb-4 rounded-lg">
         <h2>{{ recipe.name }}</h2>
@@ -29,6 +29,7 @@
             {{ tag }}
           </li>
         </ul>
+        <Button label="Return Item" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm"  @click="selectItemForReturn(recipe)" />
       </div>
     </div>
   </div>
@@ -36,13 +37,23 @@
 </template>
 
 <script>
+import Button from 'primevue/button';
 export default {
   props: {
     recipes: {
       type: Array,
       required: true
     }
-  }
+  },
+  methods: {
+  selectItemForReturn(recipe) {
+      this.selectedItem = recipe;
+      console.log(this.selectedItem);
+    }
+  },
+  components: {
+    Button,
+  },
 }
 </script>
 
