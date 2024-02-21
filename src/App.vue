@@ -1,156 +1,93 @@
 <template>
-  <div class="container">
-    <h2>Order Details</h2>
+  <div class="flex flex-col justify-center items-center h-screen">
 
-    <InputText placeholder="Email" v-model="email" class="mb-2" />
-    <InputText type="number" placeholder="Order Number" v-model="orderNumber" class="mb-2" />
-
-    <Button label="Submit" @click="handleSubmit" :disabled="!isFormValid" />
-
-
-    <!-- Need to make this use the OrderResults.vue file -->
-    <div v-if="submitted">
-
-      <div v-if="matchingItem">
-        <h2>Order Details</h2>
-
-        <p>Order ID: {{ matchingItem.id }}</p>
-        <p>SKU: {{ matchingItem.sku }}</p>
-        <p>Description (French): {{ matchingItem.french }}</p>
-        <p>WooCommerce ID: {{ matchingItem.wooId }}</p>
-        <p>Status: {{ matchingItem.status }}</p>
-        <p>Fulfillment Date: {{ matchingItem.fulfillmentDate }}</p>
-        <p>Tracking Number: {{ matchingItem.trackingNumber }}</p>
-        <p>Courier: {{ matchingItem.courier }}</p>
-
-        <button :disabled="returnButtonDisabled" class="p-button p-component" type="button" aria-label="Return" data-pc-name="button" data-pc-section="root">
-        <span class="p-button-label" data-pc-section="label">Return</span></button>
-
+    <template v-if="isLoading">
+      <div class="animate-pulse">
+        <div class="h-6 bg-gray-200 rounded w-40 mb-4"></div>
       </div>
+    </template>
 
-      <div v-if="submitted">
-        <div v-if="matchingItem"> </div> <div v-else-if="orderNotFound">
-          <ErrorMessage />
+    <template v-else>
+      <div class="container mx-auto p-4 max-w-500 max-w-xl">
+        <h1 class="text-4xl text-center mb-4 font-bold">{{ pageContent }}</h1>
+        <div class="flex flex-col gap-2 mb-4 text-left">
+            <p class="">Email Address:</p>
+          <InputText placeholder="Email Address" class="w-full p-2 border border-gray-300 rounded-md shadow-sm"/>
+          <p>Order Number:</p>
+          <InputText type="number" placeholder="Order Number" class="w-full p-2 border border-gray-300 rounded-md shadow-sm" v-model="orderNumber" />
+          <Button label="Submit" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm" @click="handleSubmit" />
         </div>
       </div>
+    </template>
+
+    <div v-if="buttonPressed">
+      <p>Button was pressed!</p>
+      <ul v-if="showResults">
+        <li v-for="recipe in fetchedData.recipes" :key="recipe.id">
+          {{ recipe.name }} - Cooking Time: {{ recipe.cookTimeMinutes }} minutes
+        </li>
+      </ul>
 
     </div>
   </div>
-
 </template>
 
 <script>
-import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import axios from 'axios';
+import Button from 'primevue/button';
 
-import ErrorMessage from './components/ErrorMessage.vue';
+import OrderDetails from './components/OrderResults.vue';
+
+import axios from 'axios';
 
 export default {
   name: 'App',
   components: {
-    Button,
     InputText,
-    ErrorMessage,
-
+    Button,
+    OrderDetails,
   },
   data() {
     return {
-      email: '',
+      isLoading: true, // Initialize isLoading
+      pageContent: '', // Initialize pageContent
+      buttonPressed: false,
+      fetchedData: {},
+      showResults: false,
       orderNumber: '',
-      submitted: false,
-      orders: [],
-      matchingOrder: null,
-      orderDetails: null,
-      orderNotFound: false, // Initially, no error state
-      matchedOrder: null, // Add a property to store matching order
-      matchingMessage: false, // Variable to display Bingo message
-      matchingItem: null, //  Store the matching WooCommerce order
-      matchError: null, // Stores the error if no matching order
-      returnButtonDisabled: true, // Initially disabled
-   };
+    };
   },
-  computed: {
-    isFormValid() {
-      return this.email.trim() !== '' && this.orderNumber.trim() !== '';
-    }
+  mounted() {
+   this.fetchData();
   },
   methods: {
-    handleSubmit() {
-      this.fetchData();
-      this.submitted = true;
-      this.matchingItem = null;
-      this.matchingMessage = false;
-      this.matchError = null;
-      this.orderNotFound = false;
-    },
-    fetchData() {
-      const apiEndpoint = 'http://localhost:1337/api/orders';
-      axios.get(apiEndpoint)
-        .then(response => {
-          this.orders = response.data.data;
-          this.findMatchingOrder();
-        })
-        .catch(error => {
-          console.error("Error fetching data:", error);
-        });
-    },
-    findMatchingOrder() {
-      const matchingOrder = this.orders.find(order => order.attributes.email.toLowerCase() === this.email.toLowerCase());
-      if (matchingOrder) {
-        this.matchingOrder = matchingOrder;
-        this.orderNotFound = false;
-        this.fetchOrderDetails();
-      } else {
-        this.matchingOrder = null;
-        this.orderDetails = null;
-        this.orderNotFound = true;
-        this.matchingOrder = null;
-        this.orderDetails = null;
-
+    async fetchData() {
+      try {
+        const response = await axios.get('http://localhost:1337/api/returnpage');
+        this.pageContent = response.data.data.attributes.Title; // Adjust 'someTextProperty'
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Handle error gracefully, maybe display an error message
+      } finally {
+        this.isLoading = false;
       }
     },
-    fetchOrderDetails() {
-    if (this.matchingOrder) {
-      const orderId = this.matchingOrder.id;
-      const orderDetailEndpoint = `http://localhost:1337/api/orders/${orderId}?populate=*`;
-      axios.get(orderDetailEndpoint)
-        .then(response => {
-
-          const orderData = response.data. data.attributes.orderData;
-          const matchingItem = orderData.find(item => item.wooId === this.orderNumber);
-
-          if (matchingItem) {
-            this.matchingMessage = true;
-            this.matchingItem = matchingItem; // Store the matching item
-            this.returnButtonDisabled = false; // Enable the button
-          }  else {
-            // Case: matchingItem not found (Add display logic)
-            this.matchError = "No matching WooCommerce order found.";
-         }
-        })
-        .catch(error => {
-          console.error("Error fetching order details:", error);
-          // Case: API call resulted in error (Add display logic)
-        });
-    } else { // Case: No matching order at all
-        this.orderNotFound = true;
+    async handleSubmit() {
+      try {
+        const response = await fetch('https://dummyjson.com/recipes');
+        this.fetchedData = await response.json();
+        this.buttonPressed = true;
+        this.showResults = true;
+      } catch (error) {
+        console.error("Error fetching from dummy API:", error);
+      } finally {
+        console.log("Order Number:", this.orderNumber); // will need to remove later
       }
+    }
   }
 }
-};
 </script>
 
 <style>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-}
-
-.mb-2 {
-  margin-bottom: 10px;
-}
+/* Add Tailwind CSS classes here */
 </style>
