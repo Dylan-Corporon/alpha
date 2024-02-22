@@ -44,6 +44,7 @@
 
       <div class="flex flex-col items-center justify-center h-screen">
         <div v-if="showSnapMessenge">
+          <img :src="selectedRecipe.image" alt="Placeholder Image" class="w-full h-40 object-cover mb-4 rounded-lg">
       <h2>{{ selectedRecipe.name }}</h2>
       <li v-for="ingredient in selectedRecipe.ingredients" :key="ingredient" class="ingredient">
             {{ ingredient }}
