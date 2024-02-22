@@ -1,5 +1,5 @@
 <template>
-
+<div>
   <div class="order-details-wrapper">
     <div class="flex bg-gray-200 p-6">
 
@@ -7,7 +7,7 @@
 
         <div class="col-span-2">
           <p class="orderNumber font-bold-600">Order #342342</p>
-          <p class="orderDetails">This order contains <strong>{{ recipes.length }}</strong>. These items may ship separately.</p>
+          <p class="orderDetails">This order contains <strong>{{ recipes.length }}</strong> items. These items may ship separately.</p>
           <p class="orderEmail"><strong>Email:</strong> Email address</p>
         </div>
         <div class="col-span-2">
@@ -19,7 +19,7 @@
 
   <div class="container mx-auto p-4">
 
-    <div class="flex flex-wrap justify-around gap-4">
+    <div class="flex flex-wrap justify-center gap-4">
       <div v-for="recipe in recipes" :key="recipe.id" class="bg-white rounded-lg shadow-md p-4 border border-gray-200">
         <img :src="recipe.image" alt="Placeholder Image" class="w-full h-40 object-cover mb-4 rounded-lg">
         <h2>{{ recipe.name }}</h2>
@@ -29,11 +29,14 @@
             {{ tag }}
           </li>
         </ul>
-        <Button label="Return Item" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm"  @click="selectItemForReturn(recipe)" />
+        <Button label="Return Item"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm"
+                @click="handleClick(recipe)"
+        />
       </div>
     </div>
   </div>
-
+</div>
 </template>
 
 <script>
@@ -45,14 +48,15 @@ export default {
       required: true
     }
   },
-  methods: {
-  selectItemForReturn(recipe) {
-      this.selectedItem = recipe;
-      console.log(this.selectedItem);
-    }
-  },
   components: {
     Button,
+    emits: ['itemSelected'],
+  },
+  methods: {
+    handleClick(recipe) {
+      this.$emit('itemSelected', recipe);  // Emit the event
+      this.selectedItem = recipe;
+    },
   },
 }
 </script>

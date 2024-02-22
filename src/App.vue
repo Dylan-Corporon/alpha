@@ -1,5 +1,9 @@
 <template>
+
+  <!-- Page Content Start -->
   <div class="flex flex-col justify-center items-center">
+
+    <div v-if="!showSnapMessenge">
 
     <template v-if="isLoading">
       <div class="animate-pulse">
@@ -8,7 +12,8 @@
     </template>
 
     <template v-else>
-      <div class="container mx-auto p-4 max-w-500 max-w-xl">
+      <!-- page template inputs start -->
+      <div id="target" class="container mx-auto p-4 max-w-500 max-w-xl">
         <h1 class="text-4xl text-center mb-4 font-bold">{{ pageTitle }}</h1>
         <div class="flex flex-col gap-2 mb-4 text-left">
             <p class="">{{ emailTitle }}</p>
@@ -19,12 +24,39 @@
           <Button label="Submit" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm" @click="handleSubmit" />
         </div>
       </div>
+      <!-- page template inputs end -->
     </template>
 
     <div v-if="buttonPressed">
-      <OrderResults :recipes="fetchedData.recipes" v-if="showResults" />
+      <div>
+
+        <OrderResults
+          v-if="showResults"
+          :recipes="fetchedData.recipes"
+          @itemSelected="handleItemSelected"
+        />
+      </div>
     </div>
+
+    </div>
+
+    <div v-else>
+
+      <div class="flex flex-col items-center justify-center h-screen">
+        <div v-if="showSnapMessenge">
+      <h2>{{ selectedRecipe.name }}</h2>
+      <li v-for="ingredient in selectedRecipe.ingredients" :key="ingredient" class="ingredient">
+            {{ ingredient }}
+          </li>
+      <p><strong>Cooking Time:</strong> {{ selectedRecipe.cookTimeMinutes }}</p>
+      </div>
+        <Button label="close" class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm" @click="showSnapMessenge = false" />
+      </div>
+
   </div>
+</div>
+
+
 
 </template>
 
@@ -52,13 +84,16 @@ export default {
       showResults: false,
       emailAddress: '',
       orderNumber: '',
+      selectedItem: null, // Store selected item
+      showSnapMessenge : false,
+      selectedRecipe: null, // To hold the selected recipe
     };
   },
   mounted() {
    this.fetchData();
   },
   methods: {
-
+    // this is to get the page content
     async fetchData() {
       try {
         const response = await axios.get('http://localhost:1337/api/returnpage');
@@ -71,6 +106,7 @@ export default {
         this.isLoading = false;
       }
     },
+    // this is to get the order number and then find the orders
     async handleSubmit() {
       try {
         if (!this.orderNumber) { // Check if orderNumber is empty
@@ -86,7 +122,12 @@ export default {
         console.error("Error fetching recipes:", error);
         // Handle the error (e.g., display an error message to the user)
       }
-    }
+    },
+    handleItemSelected(recipe) {
+      console.log('Heard from child component:', recipe);
+      this.selectedRecipe = recipe; // Store the recipe
+      this.showSnapMessenge = true;
+    },
   }
 }
 </script>
