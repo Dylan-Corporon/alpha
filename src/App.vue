@@ -12,11 +12,12 @@
     </template>
 
     <template v-else>
+
       <!-- page template inputs start -->
-      <div id="target" class="container mx-auto p-4 max-w-500 max-w-xl">
+      <div id="target" class="container mx-auto p-4 sm:max-xl:bg-blue-50">
         <h1 class="text-4xl text-center mb-4 font-bold">{{ pageTitle }}</h1>
         <div class="flex flex-col gap-2 mb-4 text-left">
-            <p class="">{{ emailTitle }}</p>
+            <p class="md:text-right">{{ emailTitle }}</p>
           <InputText placeholder="Email Address" class="w-full p-2 border border-gray-300 rounded-md shadow-sm"/>
           <p>{{ orderTitle }}</p>
           <p><small>search for food items, like chicken</small></p>
@@ -28,7 +29,7 @@
     </template>
 
     <div v-if="buttonPressed">
-      <div>
+      <div class="container">
 
         <OrderResults
           v-if="showResults"
@@ -114,6 +115,23 @@ export default {
           return; // Do nothing if empty
         }
 
+        const url = 'https://data.goodmorning.com/a/orderStatus?email=brittneybeazleyb@gmail.com&wooId=407363';
+
+        fetch(url, {
+          method: 'GET',
+          mode: 'cors',
+          redirect: 'follow',
+          credentials: 'omit',
+          cache: 'no-cache'
+        })
+          .then(response => response.text())
+          .then(data => {
+            console.log(data); // Print the response
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+
         const response = await fetch(`https://dummyjson.com/recipes/search?q=${this.orderNumber}`);
         // Notice the template literal for URL construction
         this.fetchedData = await response.json();
@@ -131,6 +149,8 @@ export default {
     },
   }
 }
+
+
 </script>
 
 <style>
