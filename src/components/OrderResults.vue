@@ -3,14 +3,14 @@
   <div class="order-details-wrapper">
     <div class="flex bg-gray-200 p-6">
 
-      <div class="container flex flex-wrap justify-center gap-4">
+      <div class="container columns-2 gap-4">
 
-        <div class="col-span-2">
+        <div class="orderDetails">
           <p class="orderNumber font-bold-600">Order #342342</p>
           <p class="orderDetails">This order contains <strong>{{ recipes.length }}</strong> items. These items may ship separately.</p>
           <p class="orderEmail"><strong>Email:</strong> Email address</p>
         </div>
-        <div class="col-span-2">
+        <div class="orderDate">
           <p><strong>Order Date:</strong> June 19, 2024</p>
         </div>
       </div>
