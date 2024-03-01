@@ -32,7 +32,10 @@
                     <InputText type="number" placeholder="Order Number" class="w-full p-2 border border-gray-300 rounded-md shadow-sm" v-model="inputOrderNumber"/>
                 </div>
 
-                <Button label="Submit" class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm w-full" @click="handleSubmit" />
+                <Button label="Submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md shadow-sm w-full"
+                @click="handleSubmit"
+                />
 
             </div>
         </div>
@@ -64,12 +67,12 @@
 // import components
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+
 import OrderResultsBar from '../components/OrderResultsInfoBar.vue';
 import OrderResults from '../components/OrderResultsBox.vue';
 
 // axios allows us to make requests
 import axios from 'axios';
-
 
 export default {
 
@@ -90,6 +93,10 @@ export default {
             orderDataReady: false,
             numberOfItems: '',
             orderContents: [],
+            pageTitle: '',
+            pageIcon: '',
+            emailTitle: '',
+            orderTitle: '',
         };
     },
     mounted() {
@@ -100,11 +107,12 @@ export default {
         async fetchData() {
             try {
                 // this gets the page title, email address, and order number from the API
-                const response      = await axios.get('http://localhost:1337/api/returnpage?populate=*');
-                this.pageTitle      = response.data.data.attributes.Title;
-                this.pageIcon       = 'http://localhost:1337' + response.data.data.attributes.Icon.data.attributes.url;
-                this.emailTitle     = response.data.data.attributes.EmailAddress;
-                this.orderTitle     = response.data.data.attributes.OrderNumber;
+                const response      = await axios.get('http://localhost:1337/api/return-page?populate[returnsItemPage][populate]=*&populate[returnsConfirmationPage][populate]=*&populate[returnsUploadPage][populate]=*');
+                console.log(response, ' what');
+                this.pageTitle      = response.data.data.attributes.title;
+                this.pageIcon       = 'http://localhost:1337' + response.data.data.attributes.icon;
+                this.emailTitle     = response.data.data.attributes.login;
+                this.orderTitle     = response.data.data.attributes.orderNumber;
 
             } catch (error) {
                 console.error("Error fetching data:", error);
