@@ -106,11 +106,12 @@ export default {
     methods: {
         async fetchData() {
             try {
+
                 // this gets the page title, email address, and order number from the API
-                const response      = await axios.get('http://localhost:1337/api/return-page?populate[returnsItemPage][populate]=*&populate[returnsConfirmationPage][populate]=*&populate[returnsUploadPage][populate]=*');
+                const response      = await axios.get('http://localhost:1337/api/return-page?populate[returnsItemPage][populate]=*&populate[returnsConfirmationPage][populate]=*&&populate[returnsUploadPage][populate]=*&populate[icon][populate]=*');
                 console.log(response, ' what');
                 this.pageTitle      = response.data.data.attributes.title;
-                this.pageIcon       = 'http://localhost:1337' + response.data.data.attributes.icon;
+                this.pageIcon       = 'http://localhost:1337' + response.data.data.attributes.icon.data.attributes.url;
                 this.emailTitle     = response.data.data.attributes.login;
                 this.orderTitle     = response.data.data.attributes.orderNumber;
 
